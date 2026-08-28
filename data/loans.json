@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "customerIdentification": "1038798848",
+    "customerName": "Anyi",
+    "amount": 1000,
+    "numberOfInstallments": 1,
+    "installmentValue": 1000,
+    "pendingBalance": 1000,
+    "status": "ACTIVE"
+  }
+]
