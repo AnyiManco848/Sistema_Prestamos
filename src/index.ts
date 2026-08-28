@@ -2,8 +2,11 @@ import * as readline from 'readline/promises';
 import { stdin as input, stdout as output } from 'process';
 
 import { CustomerService } from './services/CustomerService';
+import { LoanService } from './services/LoanService';
+import { parseAmount } from './utils/ParseAmount';
 
 const customerService = new CustomerService();
+const loanService = new LoanService();
 
 /**
  * Small wrapper around readline/promises that buffers incoming lines so that
@@ -68,7 +71,8 @@ function printMenu(): void {
   console.log('================================');
   console.log('');
   console.log('1. Register customer');
-  console.log('2. Exit');
+  console.log('2. Register loan');
+  console.log('3. Exit');
   console.log('');
 }
 
@@ -80,6 +84,33 @@ async function registerCustomerFlow(reader: ConsoleReader): Promise<void> {
     const customer = customerService.registerCustomer(name, identification);
     console.log('Customer registered successfully.');
     console.log(`Customer ID: ${customer.id}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(message);
+  }
+}
+
+async function registerLoanFlow(reader: ConsoleReader): Promise<void> {
+  const customerIdentification = await reader.question(
+    'Customer identification: ',
+  );
+  const amountInput = await reader.question('Loan amount: ');
+  const numberOfInstallments = Number(
+    await reader.question('Number of installments: '),
+  );
+
+  try {
+    const amount = parseAmount(amountInput);
+    const loan = loanService.registerLoan(
+      customerIdentification,
+      amount,
+      numberOfInstallments,
+    );
+    console.log('Loan registered successfully.');
+    console.log(`Loan ID: ${loan.id}`);
+    console.log(`Customer: ${loan.customerName}`);
+    console.log(`Amount: $${loan.amount}`);
+    console.log(`Installment: $${loan.installmentValue}`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.log(message);
@@ -100,6 +131,9 @@ async function main(): Promise<void> {
         await registerCustomerFlow(reader);
         break;
       case '2':
+        await registerLoanFlow(reader);
+        break;
+      case '3':
         console.log('Goodbye.');
         running = false;
         break;
