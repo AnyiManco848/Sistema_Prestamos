@@ -3,10 +3,12 @@ import { stdin as input, stdout as output } from 'process';
 
 import { CustomerService } from './services/CustomerService';
 import { LoanService } from './services/LoanService';
+import { PaymentService } from './services/PaymentService';
 import { parseAmount } from './utils/ParseAmount';
 
 const customerService = new CustomerService();
 const loanService = new LoanService();
+const paymentService = new PaymentService();
 
 /**
  * Small wrapper around readline/promises that buffers incoming lines so that
@@ -72,7 +74,8 @@ function printMenu(): void {
   console.log('');
   console.log('1. Register customer');
   console.log('2. Register loan');
-  console.log('3. Exit');
+  console.log('3. Register payment');
+  console.log('4. Exit');
   console.log('');
 }
 
@@ -117,6 +120,30 @@ async function registerLoanFlow(reader: ConsoleReader): Promise<void> {
   }
 }
 
+async function registerPaymentFlow(reader: ConsoleReader): Promise<void> {
+  const customerIdentification = await reader.question(
+    'Customer identification: ',
+  );
+  const amountInput = await reader.question('Payment amount: ');
+
+  try {
+    const amount = parseAmount(amountInput);
+    const result = paymentService.registerPayment(
+      customerIdentification,
+      amount,
+    );
+    console.log('Payment registered successfully.');
+    console.log('');
+    console.log(`Payment: $${result.payment.amount}`);
+    console.log(`Previous balance: $${result.previousBalance}`);
+    console.log(`New balance: $${result.newBalance}`);
+    console.log(`Remaining installments: ${result.remainingInstallments}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(message);
+  }
+}
+
 async function main(): Promise<void> {
   const reader = new ConsoleReader();
 
@@ -134,6 +161,9 @@ async function main(): Promise<void> {
         await registerLoanFlow(reader);
         break;
       case '3':
+        await registerPaymentFlow(reader);
+        break;
+      case '4':
         console.log('Goodbye.');
         running = false;
         break;
