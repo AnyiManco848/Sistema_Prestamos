@@ -75,7 +75,8 @@ function printMenu(): void {
   console.log('1. Register customer');
   console.log('2. Register loan');
   console.log('3. Register payment');
-  console.log('4. Exit');
+  console.log('4. Check pending balance');
+  console.log('5. Exit');
   console.log('');
 }
 
@@ -144,6 +145,34 @@ async function registerPaymentFlow(reader: ConsoleReader): Promise<void> {
   }
 }
 
+async function checkPendingBalanceFlow(
+  reader: ConsoleReader,
+): Promise<void> {
+  const customerIdentification = await reader.question(
+    'Customer identification: ',
+  );
+
+  try {
+    const balance = loanService.getPendingBalance(customerIdentification);
+    console.log('');
+    console.log('================================');
+    console.log('       LOAN BALANCE');
+    console.log('================================');
+    console.log('');
+    console.log(`Loan ID: ${balance.loanId}`);
+    console.log(`Customer: ${balance.customerName}`);
+    console.log(`Pending balance: $${balance.pendingBalance}`);
+    console.log(
+      `Installments paid: ${balance.installmentsPaid} of ${balance.numberOfInstallments}`,
+    );
+    console.log(`Installments pending: ${balance.installmentsPending}`);
+    console.log(`Status: ${balance.status}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(message);
+  }
+}
+
 async function main(): Promise<void> {
   const reader = new ConsoleReader();
 
@@ -164,6 +193,9 @@ async function main(): Promise<void> {
         await registerPaymentFlow(reader);
         break;
       case '4':
+        await checkPendingBalanceFlow(reader);
+        break;
+      case '5':
         console.log('Goodbye.');
         running = false;
         break;

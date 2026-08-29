@@ -16,7 +16,7 @@
     "amount": 50000,
     "numberOfInstallments": 6,
     "installmentValue": 8333.33,
-    "pendingBalance": 45000,
+    "pendingBalance": 36667,
     "status": "ACTIVE"
   }
 ]
