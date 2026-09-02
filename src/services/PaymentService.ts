@@ -71,7 +71,7 @@ export class PaymentService {
     const remainingInstallments =
       newBalance === 0
         ? 0
-        : Math.ceil(newBalance / loan.installmentValue);
+        : Number((newBalance / loan.installmentValue).toFixed(1));
 
     return { payment, previousBalance, newBalance, remainingInstallments };
   }
