@@ -26,7 +26,37 @@
     "amount": 200000,
     "numberOfInstallments": 4,
     "installmentValue": 50000,
-    "pendingBalance": 175000,
+    "pendingBalance": 0,
+    "status": "PAID"
+  },
+  {
+    "id": "4",
+    "customerIdentification": "1038798848",
+    "customerName": "Anyi",
+    "amount": 5000000,
+    "numberOfInstallments": 24,
+    "installmentValue": 208333.33,
+    "pendingBalance": 5000000,
+    "status": "ACTIVE"
+  },
+  {
+    "id": "5",
+    "customerIdentification": "1037630742",
+    "customerName": "Julian Arango",
+    "amount": 1000000,
+    "numberOfInstallments": 1,
+    "installmentValue": 1000000,
+    "pendingBalance": 800000,
+    "status": "ACTIVE"
+  },
+  {
+    "id": "6",
+    "customerIdentification": "32286100",
+    "customerName": "Mercedes Madrigal",
+    "amount": 6000000,
+    "numberOfInstallments": 60,
+    "installmentValue": 100000,
+    "pendingBalance": 6000000,
     "status": "ACTIVE"
   }
 ]

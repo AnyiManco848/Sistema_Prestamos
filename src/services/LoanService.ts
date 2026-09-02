@@ -75,6 +75,19 @@ export class LoanService {
     return loan;
   }
 
+  public calculateInstallment(
+    amount: number,
+    numberOfInstallments: number,
+  ): number {
+    LoanValidation.validateAmount(amount);
+    LoanValidation.validateInstallments(numberOfInstallments);
+
+    const installmentValue =
+      Math.round((amount / numberOfInstallments) * 100) / 100;
+
+    return installmentValue;
+  }
+
   public getPendingBalance(
     customerIdentification: string,
   ): PendingBalanceResult {

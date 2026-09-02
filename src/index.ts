@@ -74,9 +74,10 @@ function printMenu(): void {
   console.log('');
   console.log('1. Register customer');
   console.log('2. Register loan');
-  console.log('3. Register payment');
-  console.log('4. Check pending balance');
-  console.log('5. Exit');
+  console.log('3. Calculate installment');
+  console.log('4. Register payment');
+  console.log('5. Check pending balance');
+  console.log('6. Exit');
   console.log('');
 }
 
@@ -115,6 +116,27 @@ async function registerLoanFlow(reader: ConsoleReader): Promise<void> {
     console.log(`Customer: ${loan.customerName}`);
     console.log(`Amount: $${loan.amount}`);
     console.log(`Installment: $${loan.installmentValue}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(message);
+  }
+}
+
+async function calculateInstallmentFlow(
+  reader: ConsoleReader,
+): Promise<void> {
+  const amountInput = await reader.question('Amount: ');
+  const numberOfInstallments = Number(
+    await reader.question('Number of installments: '),
+  );
+
+  try {
+    const amount = parseAmount(amountInput);
+    const installmentValue = loanService.calculateInstallment(
+      amount,
+      numberOfInstallments,
+    );
+    console.log(`Installment value: $${installmentValue}`);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.log(message);
@@ -189,12 +211,15 @@ async function main(): Promise<void> {
         await registerLoanFlow(reader);
         break;
       case '3':
-        await registerPaymentFlow(reader);
+        await calculateInstallmentFlow(reader);
         break;
       case '4':
-        await checkPendingBalanceFlow(reader);
+        await registerPaymentFlow(reader);
         break;
       case '5':
+        await checkPendingBalanceFlow(reader);
+        break;
+      case '6':
         console.log('Goodbye.');
         running = false;
         break;
