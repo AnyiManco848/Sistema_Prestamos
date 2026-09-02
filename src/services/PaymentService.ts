@@ -21,7 +21,7 @@ export interface RegisterPaymentResult {
 export class PaymentService {
   public registerPayment(
     customerIdentification: string,
-    amount: number,
+    paymentAmountInput: string,
   ): RegisterPaymentResult {
     const customers = this.readJsonArray<Customer>(CUSTOMERS_FILE);
     const customer = customers.find(
@@ -43,7 +43,15 @@ export class PaymentService {
       throw new Error('Error: No active loan found for this customer.');
     }
 
-    PaymentValidation.validatePaymentAmount(amount);
+    PaymentValidation.validatePaymentIsNumeric(paymentAmountInput);
+
+    const amount = parseInt(
+      paymentAmountInput.replace(/[.,]/g, '').trim(),
+      10,
+    );
+
+    PaymentValidation.validatePaymentIsNotNegative(amount);
+    PaymentValidation.validatePaymentIsGreaterThanZero(amount);
     PaymentValidation.validatePaymentAgainstBalance(
       amount,
       loan.pendingBalance,
@@ -71,7 +79,7 @@ export class PaymentService {
     const remainingInstallments =
       newBalance === 0
         ? 0
-        : Math.ceil(newBalance / loan.installmentValue);
+        : Number((newBalance / loan.installmentValue).toFixed(1));
 
     return { payment, previousBalance, newBalance, remainingInstallments };
   }

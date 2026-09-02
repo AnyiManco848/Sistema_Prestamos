@@ -27,6 +27,12 @@ export class LoanService {
     amount: number,
     numberOfInstallments: number,
   ): Loan {
+    if (!DIGITS_ONLY_PATTERN.test(customerIdentification)) {
+      throw new Error(
+        'Error: Customer identification must contain only numbers.',
+      );
+    }
+
     const customers = this.readJsonArray<Customer>(CUSTOMERS_FILE);
     const customer = customers.find(
       (item) => item.identification === customerIdentification,
@@ -35,21 +41,19 @@ export class LoanService {
       throw new Error('Error: Customer not found.');
     }
 
-    LoanValidation.validateAmount(amount);
-    LoanValidation.validateInstallments(numberOfInstallments);
-
     const loans = this.readJsonArray<Loan>(LOANS_FILE);
 
-    const hasOverdueLoan = loans.some(
+    const hasUnpaidLoan = loans.some(
       (loan) =>
         loan.customerIdentification === customerIdentification &&
-        loan.status === 'OVERDUE',
+        loan.status !== 'PAID',
     );
-    if (hasOverdueLoan) {
-      throw new Error(
-        'Error: Customer has an overdue loan. Cannot register a new loan.',
-      );
+    if (hasUnpaidLoan) {
+      throw new Error('Error: Customer already has an active loan.');
     }
+
+    LoanValidation.validateAmount(amount);
+    LoanValidation.validateInstallments(numberOfInstallments);
 
     const installmentValue =
       Math.round((amount / numberOfInstallments) * 100) / 100;
@@ -101,14 +105,15 @@ export class LoanService {
     );
     const loan = activeLoan ?? customerLoans[customerLoans.length - 1];
 
-    const installmentsPending =
+    const installmentsPendingExact =
       loan.pendingBalance === 0
         ? 0
-        : Math.min(
-            Math.ceil(loan.pendingBalance / loan.installmentValue),
-            loan.numberOfInstallments,
-          );
-    const installmentsPaid = loan.numberOfInstallments - installmentsPending;
+        : loan.pendingBalance / loan.installmentValue;
+    const installmentsPaidExact =
+      loan.numberOfInstallments - installmentsPendingExact;
+
+    const installmentsPending = Number(installmentsPendingExact.toFixed(1));
+    const installmentsPaid = Number(installmentsPaidExact.toFixed(1));
 
     return {
       loanId: loan.id,

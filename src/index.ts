@@ -128,10 +128,9 @@ async function registerPaymentFlow(reader: ConsoleReader): Promise<void> {
   const amountInput = await reader.question('Payment amount: ');
 
   try {
-    const amount = parseAmount(amountInput);
     const result = paymentService.registerPayment(
       customerIdentification,
-      amount,
+      amountInput,
     );
     console.log('Payment registered successfully.');
     console.log('');
