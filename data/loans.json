@@ -18,5 +18,15 @@
     "installmentValue": 8333.33,
     "pendingBalance": 36667,
     "status": "ACTIVE"
+  },
+  {
+    "id": "3",
+    "customerIdentification": "32358369",
+    "customerName": "Leidy Henao",
+    "amount": 200000,
+    "numberOfInstallments": 4,
+    "installmentValue": 50000,
+    "pendingBalance": 200000,
+    "status": "ACTIVE"
   }
 ]

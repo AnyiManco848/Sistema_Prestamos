@@ -6,8 +6,9 @@ import { Customer } from '../models/Customer';
 const DATA_DIRECTORY = path.join(__dirname, '..', '..', 'data');
 const CUSTOMERS_FILE = path.join(DATA_DIRECTORY, 'customers.json');
 
-const NAME_PATTERN = /^[A-Za-zÁÉÍÓÚÑáéíóúñ ]+$/;
-const IDENTIFICATION_PATTERN = /^\d{10}$/;
+const NAME_HAS_NUMBER_PATTERN = /[0-9]/;
+const NAME_ONLY_LETTERS_PATTERN = /^[A-Za-zÁÉÍÓÚÑáéíóúñ ]+$/;
+const IDENTIFICATION_NUMERIC_PATTERN = /^[0-9]+$/;
 
 export class CustomerService {
   public registerCustomer(name: string, identification: string): Customer {
@@ -26,15 +27,13 @@ export class CustomerService {
     const trimmedName = name.trim();
     const trimmedIdentification = identification.trim();
 
-    if (!NAME_PATTERN.test(trimmedName)) {
-      throw new Error('Error: Name must contain only letters.');
-    }
-
-    if (!IDENTIFICATION_PATTERN.test(trimmedIdentification)) {
-      throw new Error('Error: Identification must be exactly 10 digits.');
-    }
+    this.validateNameHasNoNumbers(trimmedName);
+    this.validateNameHasOnlyLetters(trimmedName);
+    this.validateIdentificationIsNumeric(trimmedIdentification);
 
     const customers = this.readCustomers();
+
+    this.validateIdentificationNotDuplicate(trimmedIdentification, customers);
 
     const customer: Customer = {
       id: this.generateId(customers),
@@ -46,6 +45,39 @@ export class CustomerService {
     this.writeCustomers(customers);
 
     return customer;
+  }
+
+  private validateNameHasNoNumbers(name: string): void {
+    if (NAME_HAS_NUMBER_PATTERN.test(name)) {
+      throw new Error('Error: Name must not contain numbers.');
+    }
+  }
+
+  private validateNameHasOnlyLetters(name: string): void {
+    if (!NAME_ONLY_LETTERS_PATTERN.test(name)) {
+      throw new Error('Error: Name must contain only letters.');
+    }
+  }
+
+  private validateIdentificationIsNumeric(identification: string): void {
+    if (!IDENTIFICATION_NUMERIC_PATTERN.test(identification)) {
+      throw new Error('Error: Identification must contain only numbers.');
+    }
+  }
+
+  private validateIdentificationNotDuplicate(
+    identification: string,
+    customers: Customer[],
+  ): void {
+    const alreadyRegistered = customers.some(
+      (customer) => customer.identification === identification,
+    );
+
+    if (alreadyRegistered) {
+      throw new Error(
+        'Error: This identification number is already registered.',
+      );
+    }
   }
 
   private generateId(customers: Customer[]): string {
