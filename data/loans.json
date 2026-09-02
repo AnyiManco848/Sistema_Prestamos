@@ -16,8 +16,8 @@
     "amount": 50000,
     "numberOfInstallments": 6,
     "installmentValue": 8333.33,
-    "pendingBalance": 36667,
-    "status": "ACTIVE"
+    "pendingBalance": 0,
+    "status": "PAID"
   },
   {
     "id": "3",
@@ -26,7 +26,7 @@
     "amount": 200000,
     "numberOfInstallments": 4,
     "installmentValue": 50000,
-    "pendingBalance": 200000,
+    "pendingBalance": 175000,
     "status": "ACTIVE"
   }
 ]
